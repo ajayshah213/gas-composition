@@ -1,0 +1,360 @@
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --accent-blue: #38bdf8;
+  --accent-green: #4ade80;
+  --accent-red: #ef4444;
+  --accent-yellow: #facc15;
+  --border-color: #334155;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Layout */
+.main-layout {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #020617;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.logo-area {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+}
+
+.nav-item {
+  padding: 10px 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.nav-item.active {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.sub-nav {
+  padding-left: 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+}
+
+/* Header */
+.top-header {
+  padding: 20px 30px;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.client-info {
+  display: flex;
+  gap: 20px;
+}
+
+.client-logo {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.client-details h1 {
+  margin: 0 0 5px 0;
+  font-size: 1.5rem;
+}
+
+.client-details a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.client-details p {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.header-stats {
+  text-align: right;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Tabs */
+.tabs-container {
+  display: flex;
+  gap: 10px;
+  padding: 20px 30px 0 30px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+}
+
+.tab-button.active {
+  color: var(--accent-blue);
+  border-bottom-color: var(--accent-blue);
+}
+
+/* Content Area */
+.content-area {
+  flex-grow: 1;
+  overflow: auto;
+  padding: 20px;
+  position: relative;
+}
+
+/* Sites Dashboard */
+.sites-dashboard {
+  padding: 10px;
+}
+
+.sites-header-section h2 {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.sites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.site-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-yellow); /* Default to yellow/active */
+}
+
+.gauge-container {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.gauge-arc {
+  width: 120px;
+  height: 60px;
+  border-top-left-radius: 60px;
+  border-top-right-radius: 60px;
+  border: 6px solid var(--accent-yellow);
+  border-bottom: 0;
+  position: relative;
+}
+
+.gauge-needle {
+  width: 2px;
+  height: 50px;
+  background-color: white;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform-origin: bottom center;
+}
+
+.gauge-label {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  background-color: rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.data-item {
+  text-align: center;
+}
+
+.data-item .label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.data-item .value {
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+/* Gas Network Graph Styles (Migrated) */
+.app-container {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-dark);
+  color: white;
+  overflow: hidden;
+}
+
+.header {
+  padding: 15px 20px;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.graph-container {
+  width: 100%;
+  height: 100%;
+}
+
+.custom-node {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  background-color: #1e293b;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  min-width: 100px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.custom-node.plant {
+  border-color: #4ade80;
+}
+
+.custom-node.hub {
+  border-color: #38bdf8;
+  background-color: #0f172a;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #4ade80;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #4ade80;
+}
+
+.info-panel {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  width: 280px;
+  background-color: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(4px);
+  border: 1px solid #475569;
+  border-radius: 8px;
+  padding: 15px;
+  color: white;
+  z-index: 10;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.info-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #475569;
+  color: #f8fafc;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.info-row span:first-child {
+  color: #94a3b8;
+}
+
+.info-row span:last-child {
+  font-weight: 500;
+  color: #e2e8f0;
+}
