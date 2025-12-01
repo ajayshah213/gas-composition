@@ -8,11 +8,19 @@ import { Activity } from 'lucide-react';
 const { nodes: initialNodes, edges: initialEdges } = processData(apiResponse);
 
 // Custom Node Components
+const getStatusColor = (status) => {
+    switch (status) {
+        case 'warning': return '#eab308';
+        case 'stop': return '#ef4444';
+        case 'ok': default: return '#22c55e';
+    }
+};
+
 const PlantNode = ({ data }) => (
-    <div className="custom-node plant">
+    <div className="custom-node plant" style={{ borderColor: getStatusColor(data.status) }}>
         <Handle type="source" position={Position.Right} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <div className="status-dot"></div>
+            <div className="status-dot" style={{ backgroundColor: getStatusColor(data.status) }}></div>
             <strong>{data.label}</strong>
         </div>
         <div style={{ fontSize: '10px', marginTop: '4px', opacity: 0.7 }}>Dairy Plant</div>
@@ -20,7 +28,7 @@ const PlantNode = ({ data }) => (
 );
 
 const JunctionNode = ({ data }) => (
-    <div className="custom-node junction">
+    <div className="custom-node junction" style={{ borderColor: getStatusColor(data.status) }}>
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
         <span style={{ fontSize: '10px' }}>{data.label}</span>
@@ -28,7 +36,7 @@ const JunctionNode = ({ data }) => (
 );
 
 const HubNode = ({ data }) => (
-    <div className="custom-node hub">
+    <div className="custom-node hub" style={{ borderColor: getStatusColor(data.status) }}>
         <Handle type="target" position={Position.Left} />
         <Activity size={20} style={{ marginBottom: '5px', color: '#38bdf8' }} />
         <div>{data.label}</div>

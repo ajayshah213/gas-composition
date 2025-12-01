@@ -40,12 +40,15 @@ export const processData = (data) => {
   const nodes = [];
   const edges = [];
 
+  const statuses = ['ok', 'warning', 'stop'];
+  const getRandomStatus = () => statuses[Math.floor(Math.random() * statuses.length)];
+
   // Plants
   data.plants.forEach((plant) => {
     nodes.push({
       id: plant.id,
       type: 'plant',
-      data: { label: plant.name, ...plant },
+      data: { label: plant.name, status: getRandomStatus(), ...plant },
       position: { x: 0, y: 0 }, // Initial position, will be calculated
     });
   });
@@ -55,7 +58,7 @@ export const processData = (data) => {
     nodes.push({
       id: junction.id,
       type: 'junction',
-      data: { label: junction.id, ...junction },
+      data: { label: junction.id, status: getRandomStatus(), ...junction },
       position: { x: 0, y: 0 },
     });
   });
@@ -64,20 +67,25 @@ export const processData = (data) => {
   nodes.push({
     id: data.hub.id,
     type: 'hub',
-    data: { label: 'Main Hub', ...data.hub },
+    data: { label: 'Main Hub', status: getRandomStatus(), ...data.hub },
     position: { x: 0, y: 0 },
   });
 
   // Connections
   data.connections.forEach((conn, index) => {
+    const status = getRandomStatus();
+    let edgeColor = '#22c55e'; // Green (ok)
+    if (status === 'warning') edgeColor = '#eab308'; // Yellow
+    if (status === 'stop') edgeColor = '#ef4444'; // Red
+
     edges.push({
       id: `e${index}`,
       source: conn.from,
       target: conn.to,
       animated: true,
       type: 'smoothstep', // or 'bezier'
-      style: { stroke: '#4ade80', strokeWidth: 2 }, // Green flow
-      data: { ...conn },
+      style: { stroke: edgeColor, strokeWidth: 2 },
+      data: { status, ...conn },
     });
   });
 
