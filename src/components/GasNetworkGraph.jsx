@@ -1,45 +1,60 @@
 import React, { useState, useCallback } from 'react';
 import { ReactFlow, Background, Controls, MiniMap, useNodesState, useEdgesState, Handle, Position } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import './GasNetworkGraph.css';
 import { apiResponse } from '../data';
 import { processData } from '../utils';
-import { Activity } from 'lucide-react';
+import { Activity, Wind, Thermometer, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 
 const { nodes: initialNodes, edges: initialEdges } = processData(apiResponse);
 
 // Custom Node Components
-const getStatusColor = (status) => {
+const getStatusIcon = (status) => {
     switch (status) {
-        case 'warning': return '#eab308';
-        case 'stop': return '#ef4444';
-        case 'ok': default: return '#22c55e';
+        case 'ok': return <CheckCircle size={16} className="text-green-500" />;
+        case 'warning': return <AlertTriangle size={16} className="text-yellow-500" />;
+        case 'stop': return <XCircle size={16} className="text-red-500" />;
+        default: return <Activity size={16} className="text-gray-500" />;
     }
 };
 
 const PlantNode = ({ data }) => (
-    <div className="custom-node plant" style={{ borderColor: getStatusColor(data.status) }}>
+    <div className="custom-node plant" data-status={data.status}>
         <Handle type="source" position={Position.Right} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <div className="status-dot" style={{ backgroundColor: getStatusColor(data.status) }}></div>
-            <strong>{data.label}</strong>
+        <div className="plant-header">
+            <div className="plant-title">{data.label}</div>
+            <div className="plant-status-icon">{getStatusIcon(data.status)}</div>
         </div>
-        <div style={{ fontSize: '10px', marginTop: '4px', opacity: 0.7 }}>Dairy Plant</div>
+        {/* <div className="plant-body">
+            <div className="plant-metric">
+                <div className="label"><Wind size={12} /> Flow</div>
+                <div className="value">{data.flow_rate?.toFixed(1) || '0.0'} <span style={{ fontSize: '0.7em', color: '#64748b' }}>SCFM</span></div>
+            </div>
+            <div className="plant-metric">
+                <div className="label"><Thermometer size={12} /> CH₄</div>
+                <div className="value">{data.gas_composition?.methane.toFixed(1) || '0.0'}%</div>
+            </div>
+        </div> */}
     </div>
 );
 
 const JunctionNode = ({ data }) => (
-    <div className="custom-node junction" style={{ borderColor: getStatusColor(data.status) }}>
+    <div className="custom-node junction" data-status={data.status}>
+        <Handle type="target" position={Position.Top} />
         <Handle type="target" position={Position.Left} />
+        <Handle type="target" position={Position.Bottom} />
         <Handle type="source" position={Position.Right} />
-        <span style={{ fontSize: '10px' }}>{data.label}</span>
+        <Handle type="source" position={Position.Top} />
+        <Handle type="source" position={Position.Bottom} />
+        {data.label}
     </div>
 );
 
 const HubNode = ({ data }) => (
-    <div className="custom-node hub" style={{ borderColor: getStatusColor(data.status) }}>
+    <div className="custom-node hub">
         <Handle type="target" position={Position.Left} />
-        <Activity size={20} style={{ marginBottom: '5px', color: '#38bdf8' }} />
-        <div>{data.label}</div>
+        <Activity size={24} style={{ color: '#93c5fd' }} />
+        <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>HUB</div>
     </div>
 );
 
@@ -69,13 +84,16 @@ function GasNetworkGraph() {
     return (
         <div className="app-container" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <header className="header" style={{ flexShrink: 0 }}>
-                <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Gas Network Visualizer</h2>
+                <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Gas Network Composition</h2>
                 <div style={{ display: 'flex', gap: '20px', fontSize: '0.9rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <div className="status-dot"></div> Active Flow
+                        <span style={{ color: '#22c55e' }}>●</span> Active
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <span style={{ color: '#38bdf8' }}>●</span> Hub
+                        <span style={{ color: '#ef4444' }}>●</span> Stopped
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ color: '#3b82f6' }}>●</span> Hub
                     </div>
                 </div>
             </header>
@@ -106,65 +124,225 @@ function GasNetworkGraph() {
                 </ReactFlow>
             </div>
 
-            {hoveredInfo && (
+            {/* Site Tile Panel for Plant Nodes with 6-box grid */}
+            {hoveredInfo && hoveredInfo.type === 'node' && hoveredInfo.data.max_flow_rate && (
+                <div className="info-panel site-tile-panel">
+                    <div className="site-tile-header">
+                        <div className="site-title">{hoveredInfo.data.label || hoveredInfo.data.name}</div>
+                        <div className="site-status-dot" data-status={hoveredInfo.data.status || 'ok'}></div>
+                    </div>
+
+                    <div className="gauge-section">
+                        <svg className="flow-gauge" viewBox="0 0 200 130" style={{ height: '90px' }}>
+                            <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="#334155" strokeWidth="10" strokeLinecap="round" />
+                            <path
+                                d="M 30 100 A 70 70 0 0 1 170 100"
+                                fill="none"
+                                stroke="#eab308"
+                                strokeWidth="10"
+                                strokeLinecap="round"
+                                strokeDasharray={`${(Math.min((hoveredInfo.data.flow_rate / hoveredInfo.data.max_flow_rate) * 100, 100) / 100) * 220} 220`}
+                            />
+                            <line
+                                x1="100"
+                                y1="100"
+                                x2="100"
+                                y2="45"
+                                stroke="#eab308"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                transform={`rotate(${((hoveredInfo.data.flow_rate / hoveredInfo.data.max_flow_rate) * 100 / 100) * 180 - 90} 100 100)`}
+                            />
+                            <circle cx="100" cy="100" r="4" fill="#eab308" />
+
+                            {/* <text x="100" y="115" textAnchor="middle" fill="#eab308" fontSize="24" fontWeight="700">
+                                {hoveredInfo.data.flow_rate?.toFixed(0) || '0'}
+                            </text>
+                            <text x="100" y="128" textAnchor="middle" fill="#94a3b8" fontSize="9">
+                                SCFM
+                            </text> */}
+                        </svg>
+                        {/* <div className="gauge-subtitle">
+                            {hoveredInfo.data.max_flow_rate} Max | {hoveredInfo.data.min_flow_rate} Min
+                        </div> */}
+                        <div style={{ fontSize: '0.8rem', color: '#94a3b8', textAlign: 'center' }}>
+                            {hoveredInfo.data.flow_rate?.toFixed(1) || '0.0'} / {hoveredInfo.data.max_flow_rate} SCFM
+                        </div>
+                        <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#64748b', textAlign: 'center' }}>
+                            Suggested Flow: TBD
+                        </div>
+                    </div>
+
+                    <div className="site-data-grid">
+                        <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
+                            <div className="data-label">CH₄ (%)</div>
+                            <div className="data-value">{hoveredInfo.data.gas_composition?.methane.toFixed(1) || '0.0'}</div>
+                        </div>
+                        <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
+                            <div className="data-label">CO₂ (%)</div>
+                            <div className="data-value">{hoveredInfo.data.gas_composition?.co2.toFixed(1) || '0.0'}</div>
+                        </div>
+                        <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
+                            <div className="data-label">N₂ (%)</div>
+                            <div className="data-value">{hoveredInfo.data.gas_composition?.nitrogen.toFixed(2) || '0.00'}</div>
+                        </div>
+                        <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
+                            <div className="data-label">O₂ (%)</div>
+                            <div className="data-value">{hoveredInfo.data.gas_composition?.oxygen.toFixed(2) || '0.00'}</div>
+                        </div>
+                        <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
+                            <div className="data-label">H₂S (ppm)</div>
+                            <div className="data-value">0.00</div>
+                        </div>
+                        <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
+                            <div className="data-label">Temp (°F)</div>
+                            <div className="data-value">{hoveredInfo.data.temperature?.toFixed(1) || '0.0'}</div>
+                        </div>
+                    </div>
+
+                    {/* <div className="site-data-compact">
+                        <div className="compact-section-title">Flow Details</div>
+                        <div className="compact-grid">
+                            <div className="compact-item">
+                                <span className="compact-label">Current</span>
+                                <span className="compact-value">{hoveredInfo.data.flow_rate?.toFixed(1)} SCFM</span>
+                            </div>
+                            <div className="compact-item">
+                                <span className="compact-label">Actual</span>
+                                <span className="compact-value">{hoveredInfo.data.actual_flow_rate?.toFixed(1)} SCFM</span>
+                            </div>
+                            <div className="compact-item">
+                                <span className="compact-label">Available</span>
+                                <span className="compact-value">{hoveredInfo.data.available_capacity?.toFixed(0)} SCFM</span>
+                            </div>
+                            <div className="compact-item">
+                                <span className="compact-label">Velocity</span>
+                                <span className="compact-value">{hoveredInfo.data.flow_velocity?.toFixed(1)} ft/s</span>
+                            </div>
+                        </div>
+                    </div> */}
+
+                    <div className="site-data-compact">
+                        <div className="compact-section-title">Operating Conditions</div>
+                        <div className="compact-grid">
+                            <div className="compact-item">
+                                <span className="compact-label">Pressure</span>
+                                <span className="compact-value">{hoveredInfo.data.psig?.toFixed(1)} PSIG</span>
+                            </div>
+                            <div className="compact-item">
+                                <span className="compact-label">Temperature</span>
+                                <span className="compact-value">{hoveredInfo.data.temperature?.toFixed(1)}°F</span>
+                            </div>
+                            <div className="compact-item">
+                                <span className="compact-label">Transit</span>
+                                <span className="compact-value">{hoveredInfo.data.transit_time_minutes?.toFixed(1)} min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Junction/Hub Nodes with detailed data */}
+            {hoveredInfo && hoveredInfo.type === 'node' && !hoveredInfo.data.max_flow_rate && hoveredInfo.data.flow_rate !== undefined && (
+                <div className="info-panel site-tile-panel" style={{ borderColor: '#64748b', maxWidth: '300px' }}>
+                    <div className="site-tile-header">
+                        <div className="site-title">{hoveredInfo.data.label || hoveredInfo.data.id}</div>
+                        <div className="site-status-dot" data-status={hoveredInfo.data.status || 'ok'}></div>
+                    </div>
+
+                    {/* Flow Rate Display */}
+                    <div className="gauge-section" style={{ padding: '15px 20px' }}>
+                        <div style={{ fontSize: '2rem', fontWeight: '700', color: '#64748b', lineHeight: 1 }}>
+                            {hoveredInfo.data.flow_rate?.toFixed(1) || '0.0'}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>SCFM</div>
+                    </div>
+
+                    {/* Gas Composition Grid */}
+                    {hoveredInfo.data.gas_composition && (
+                        <div className="site-data-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                            <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
+                                <div className="data-label">CH₄ (%)</div>
+                                <div className="data-value">{hoveredInfo.data.gas_composition?.methane.toFixed(1) || '0.0'}</div>
+                            </div>
+                            <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
+                                <div className="data-label">CO₂ (%)</div>
+                                <div className="data-value">{hoveredInfo.data.gas_composition?.co2.toFixed(1) || '0.0'}</div>
+                            </div>
+                            <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
+                                <div className="data-label">N₂ (%)</div>
+                                <div className="data-value">{hoveredInfo.data.gas_composition?.nitrogen.toFixed(2) || '0.00'}</div>
+                            </div>
+                            <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
+                                <div className="data-label">O₂ (%)</div>
+                                <div className="data-value">{hoveredInfo.data.gas_composition?.oxygen.toFixed(2) || '0.00'}</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Flow Details */}
+                    <div className="site-data-compact">
+                        <div className="compact-section-title">Flow Details</div>
+                        <div className="compact-grid">
+                            <div className="compact-item">
+                                <span className="compact-label">Flow Rate</span>
+                                <span className="compact-value">{hoveredInfo.data.flow_rate?.toFixed(1)} SCFM</span>
+                            </div>
+                            {/* {hoveredInfo.data.actual_flow_rate !== undefined && (
+                                <div className="compact-item">
+                                    <span className="compact-label">Actual</span>
+                                    <span className="compact-value">{hoveredInfo.data.actual_flow_rate?.toFixed(1)} SCFM</span>
+                                </div>
+                            )} */}
+                            {hoveredInfo.data.flow_velocity !== undefined && (
+                                <div className="compact-item">
+                                    <span className="compact-label">Velocity</span>
+                                    <span className="compact-value">{hoveredInfo.data.flow_velocity?.toFixed(2)} ft/s</span>
+                                </div>
+                            )}
+                            {hoveredInfo.data.transit_time_minutes !== undefined && (
+                                <div className="compact-item">
+                                    <span className="compact-label">Transit</span>
+                                    <span className="compact-value">{hoveredInfo.data.transit_time_minutes?.toFixed(1)} min</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Hub Node - Simple Display */}
+            {hoveredInfo && hoveredInfo.type === 'node' && !hoveredInfo.data.max_flow_rate && hoveredInfo.data.flow_rate === undefined && (
                 <div className="info-panel">
-                    {hoveredInfo.type === 'node' && (
-                        <>
-                            <div className="info-title">
-                                {hoveredInfo.data.name || hoveredInfo.data.label || hoveredInfo.data.id}
-                            </div>
+                    <div className="info-title">
+                        {hoveredInfo.data.name || hoveredInfo.data.label || hoveredInfo.data.id}
+                    </div>
+                </div>
+            )}
 
-                            {hoveredInfo.data.min_flow_rate && (
-                                <div className="info-row">
-                                    <span>Flow Rate</span>
-                                    <span>{hoveredInfo.data.min_flow_rate} - {hoveredInfo.data.max_flow_rate} SCFM</span>
-                                </div>
-                            )}
-
-                            {hoveredInfo.data.gas_composition && (
-                                <>
-                                    <div style={{ marginTop: '10px', marginBottom: '5px', color: '#94a3b8', fontSize: '0.8rem' }}>Composition</div>
-                                    <div className="info-row">
-                                        <span>Methane</span>
-                                        <span>{hoveredInfo.data.gas_composition.methane}%</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span>CO2</span>
-                                        <span>{hoveredInfo.data.gas_composition.co2}%</span>
-                                    </div>
-                                </>
-                            )}
-
-                            {hoveredInfo.data.temperature && (
-                                <div className="info-row">
-                                    <span>Temperature</span>
-                                    <span>{hoveredInfo.data.temperature}°F</span>
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    {hoveredInfo.type === 'edge' && (
-                        <>
-                            <div className="info-title">Pipeline Connection</div>
+            {hoveredInfo && hoveredInfo.type === 'edge' && (
+                <div className="info-panel">
+                    <div className="info-title">Pipeline Connection</div>
+                    <div className="info-section">
+                        <div className="info-row">
+                            <span>Distance</span>
+                            <span>{hoveredInfo.data.distance_miles} miles</span>
+                        </div>
+                        <div className="info-row">
+                            <span>Transit Time</span>
+                            <span>{hoveredInfo.data.transit_time_minutes?.toFixed(1) || 'N/A'} min</span>
+                        </div>
+                        <div className="info-row">
+                            <span>Diameter</span>
+                            <span>{hoveredInfo.data.pipe_diameter}</span>
+                        </div>
+                        {hoveredInfo.data.flow_velocity > 0 && (
                             <div className="info-row">
-                                <span>From</span>
-                                <span>{hoveredInfo.data.from}</span>
+                                <span>Velocity</span>
+                                <span>{hoveredInfo.data.flow_velocity?.toFixed(2)} ft/s</span>
                             </div>
-                            <div className="info-row">
-                                <span>To</span>
-                                <span>{hoveredInfo.data.to}</span>
-                            </div>
-                            <div className="info-row">
-                                <span>Distance</span>
-                                <span>{hoveredInfo.data.distance_miles} miles</span>
-                            </div>
-                            <div className="info-row">
-                                <span>Diameter</span>
-                                <span>{hoveredInfo.data.pipe_diameter}</span>
-                            </div>
-                        </>
-                    )}
+                        )}
+                    </div>
                 </div>
             )}
         </div>

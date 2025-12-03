@@ -37,6 +37,38 @@ body {
   flex-direction: column;
   padding: 20px;
   flex-shrink: 0;
+  transition: width 0.3s ease, padding 0.3s ease;
+  position: relative;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+  padding: 20px 10px;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 20px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+  transform: scale(1.1);
 }
 
 .logo-area {
@@ -204,7 +236,8 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--accent-yellow); /* Default to yellow/active */
+  background-color: var(--accent-yellow);
+  /* Default to yellow/active */
 }
 
 .gauge-container {
@@ -246,7 +279,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   padding: 10px;
   border-radius: 6px;
 }
@@ -298,7 +331,7 @@ body {
   color: white;
   font-size: 12px;
   text-align: center;
-  min-width: 100px;
+  /* min-width: 100px; */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 

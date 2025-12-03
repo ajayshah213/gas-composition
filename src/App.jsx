@@ -1,25 +1,39 @@
 import React, { useState } from 'react';
 import SitesDashboard from './components/SitesDashboard';
 import GasNetworkGraph from './components/GasNetworkGraph';
-import { LayoutDashboard, Wind } from 'lucide-react';
+import GasFlowDashboard from './components/GasFlowDashboard';
+import { LayoutDashboard, Wind, Gauge, ChevronLeft, ChevronRight } from 'lucide-react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('sites');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
     <div className="main-layout">
-      {/* Sidebar Placeholder - Visual only to match image structure */}
-      <aside className="sidebar">
-        <div className="logo-area">OMai</div>
-        <nav className="nav-menu">
-          <div className="nav-item">Drafts (1)</div>
-          <div className="nav-item">Expired (4)</div>
-          <div className="nav-item active">Clients (8)</div>
-          <div className="sub-nav">
-            <div>Aemetis</div>
-            <div>Biogas Engineering</div>
-          </div>
-        </nav>
+      {/* Sidebar with Toggle Button */}
+      <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {sidebarCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+        </button>
+
+        {!sidebarCollapsed && (
+          <>
+            <div className="logo-area">OMai</div>
+            <nav className="nav-menu">
+              <div className="nav-item">Drafts (1)</div>
+              <div className="nav-item">Expired (4)</div>
+              <div className="nav-item active">Clients (8)</div>
+              <div className="sub-nav">
+                <div>Aemetis</div>
+                <div>Biogas Engineering</div>
+              </div>
+            </nav>
+          </>
+        )}
       </aside>
 
       <main className="main-content">
@@ -60,11 +74,20 @@ function App() {
             <Wind size={16} />
             Gas Flow Composition
           </button>
+          <button
+            className={`tab-button ${activeTab === 'control' ? 'active' : ''}`}
+            onClick={() => setActiveTab('control')}
+          >
+            <Gauge size={16} />
+            Gas Control
+          </button>
         </div>
 
         {/* Content Area */}
         <div className="content-area">
-          {activeTab === 'sites' ? <SitesDashboard /> : <GasNetworkGraph />}
+          {activeTab === 'sites' && <SitesDashboard />}
+          {activeTab === 'gas' && <GasNetworkGraph />}
+          {activeTab === 'control' && <GasFlowDashboard />}
         </div>
       </main>
     </div>
