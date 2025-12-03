@@ -5,10 +5,10 @@ const SiteCard = ({ plant }) => {
     // Mock data to match the image style since we don't have all fields in data.js
     const totalEnergy = (Math.random() * 10).toFixed(2);
     const h2s = "0.00";
-    const co2 = plant.gas_composition?.co2 || "0.00";
-    const o2 = plant.gas_composition?.oxygen || "0.00";
-    const n2 = plant.gas_composition?.nitrogen || "0.00";
-    const ch4 = plant.gas_composition?.methane || "0.00";
+    const co2 = (parseFloat(plant.gas_composition?.co2) || 0).toFixed(2);
+    const o2 = (parseFloat(plant.gas_composition?.oxygen) || 0).toFixed(2);
+    const n2 = (parseFloat(plant.gas_composition?.nitrogen) || 0).toFixed(2);
+    const ch4 = (parseFloat(plant.gas_composition?.methane) || 0).toFixed(2);
 
     return (
         <div className="site-card">

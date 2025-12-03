@@ -25,16 +25,6 @@ const PlantNode = ({ data }) => (
             <div className="plant-title">{data.label}</div>
             <div className="plant-status-icon">{getStatusIcon(data.status)}</div>
         </div>
-        {/* <div className="plant-body">
-            <div className="plant-metric">
-                <div className="label"><Wind size={12} /> Flow</div>
-                <div className="value">{data.flow_rate?.toFixed(1) || '0.0'} <span style={{ fontSize: '0.7em', color: '#64748b' }}>SCFM</span></div>
-            </div>
-            <div className="plant-metric">
-                <div className="label"><Thermometer size={12} /> CH₄</div>
-                <div className="value">{data.gas_composition?.methane.toFixed(1) || '0.0'}%</div>
-            </div>
-        </div> */}
     </div>
 );
 
@@ -124,7 +114,7 @@ function GasNetworkGraph() {
                 </ReactFlow>
             </div>
 
-            {/* Site Tile Panel for Plant Nodes with 6-box grid */}
+            {/* Site Tile Panel for Plant Nodes */}
             {hoveredInfo && hoveredInfo.type === 'node' && hoveredInfo.data.max_flow_rate && (
                 <div className="info-panel site-tile-panel">
                     <div className="site-tile-header">
@@ -154,17 +144,7 @@ function GasNetworkGraph() {
                                 transform={`rotate(${((hoveredInfo.data.flow_rate / hoveredInfo.data.max_flow_rate) * 100 / 100) * 180 - 90} 100 100)`}
                             />
                             <circle cx="100" cy="100" r="4" fill="#eab308" />
-
-                            {/* <text x="100" y="115" textAnchor="middle" fill="#eab308" fontSize="24" fontWeight="700">
-                                {hoveredInfo.data.flow_rate?.toFixed(0) || '0'}
-                            </text>
-                            <text x="100" y="128" textAnchor="middle" fill="#94a3b8" fontSize="9">
-                                SCFM
-                            </text> */}
                         </svg>
-                        {/* <div className="gauge-subtitle">
-                            {hoveredInfo.data.max_flow_rate} Max | {hoveredInfo.data.min_flow_rate} Min
-                        </div> */}
                         <div style={{ fontSize: '0.8rem', color: '#94a3b8', textAlign: 'center' }}>
                             {hoveredInfo.data.flow_rate?.toFixed(1) || '0.0'} / {hoveredInfo.data.max_flow_rate} SCFM
                         </div>
@@ -173,15 +153,8 @@ function GasNetworkGraph() {
                         </div>
                     </div>
 
-                    <div className="site-data-grid">
-                        <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
-                            <div className="data-label">CH₄ (%)</div>
-                            <div className="data-value">{hoveredInfo.data.gas_composition?.methane.toFixed(1) || '0.0'}</div>
-                        </div>
-                        <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
-                            <div className="data-label">CO₂ (%)</div>
-                            <div className="data-value">{hoveredInfo.data.gas_composition?.co2.toFixed(1) || '0.0'}</div>
-                        </div>
+                    {/* First row: 2 columns for N₂ and O₂ */}
+                    <div className="site-data-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
                         <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
                             <div className="data-label">N₂ (%)</div>
                             <div className="data-value">{hoveredInfo.data.gas_composition?.nitrogen.toFixed(2) || '0.00'}</div>
@@ -190,53 +163,21 @@ function GasNetworkGraph() {
                             <div className="data-label">O₂ (%)</div>
                             <div className="data-value">{hoveredInfo.data.gas_composition?.oxygen.toFixed(2) || '0.00'}</div>
                         </div>
-                        <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
-                            <div className="data-label">H₂S (ppm)</div>
-                            <div className="data-value">0.00</div>
-                        </div>
+                    </div>
+
+                    {/* Second row: 3 columns for Temp, Pressure, Transit Time */}
+                    <div className="site-data-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
                         <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
                             <div className="data-label">Temp (°F)</div>
                             <div className="data-value">{hoveredInfo.data.temperature?.toFixed(1) || '0.0'}</div>
                         </div>
-                    </div>
-
-                    {/* <div className="site-data-compact">
-                        <div className="compact-section-title">Flow Details</div>
-                        <div className="compact-grid">
-                            <div className="compact-item">
-                                <span className="compact-label">Current</span>
-                                <span className="compact-value">{hoveredInfo.data.flow_rate?.toFixed(1)} SCFM</span>
-                            </div>
-                            <div className="compact-item">
-                                <span className="compact-label">Actual</span>
-                                <span className="compact-value">{hoveredInfo.data.actual_flow_rate?.toFixed(1)} SCFM</span>
-                            </div>
-                            <div className="compact-item">
-                                <span className="compact-label">Available</span>
-                                <span className="compact-value">{hoveredInfo.data.available_capacity?.toFixed(0)} SCFM</span>
-                            </div>
-                            <div className="compact-item">
-                                <span className="compact-label">Velocity</span>
-                                <span className="compact-value">{hoveredInfo.data.flow_velocity?.toFixed(1)} ft/s</span>
-                            </div>
+                        <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
+                            <div className="data-label">Pressure (PSI)</div>
+                            <div className="data-value">{hoveredInfo.data.psig?.toFixed(1) || '0.0'}</div>
                         </div>
-                    </div> */}
-
-                    <div className="site-data-compact">
-                        <div className="compact-section-title">Operating Conditions</div>
-                        <div className="compact-grid">
-                            <div className="compact-item">
-                                <span className="compact-label">Pressure</span>
-                                <span className="compact-value">{hoveredInfo.data.psig?.toFixed(1)} PSIG</span>
-                            </div>
-                            <div className="compact-item">
-                                <span className="compact-label">Temperature</span>
-                                <span className="compact-value">{hoveredInfo.data.temperature?.toFixed(1)}°F</span>
-                            </div>
-                            <div className="compact-item">
-                                <span className="compact-label">Transit</span>
-                                <span className="compact-value">{hoveredInfo.data.transit_time_minutes?.toFixed(1)} min</span>
-                            </div>
+                        <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
+                            <div className="data-label">Transit Time (min)</div>
+                            <div className="data-value">{hoveredInfo.data.transit_time_minutes?.toFixed(1) || '0.0'}</div>
                         </div>
                     </div>
                 </div>
@@ -258,17 +199,9 @@ function GasNetworkGraph() {
                         <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>SCFM</div>
                     </div>
 
-                    {/* Gas Composition Grid */}
+                    {/* Gas Composition Grid - Only N₂ and O₂ */}
                     {hoveredInfo.data.gas_composition && (
                         <div className="site-data-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-                            <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
-                                <div className="data-label">CH₄ (%)</div>
-                                <div className="data-value">{hoveredInfo.data.gas_composition?.methane.toFixed(1) || '0.0'}</div>
-                            </div>
-                            <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
-                                <div className="data-label">CO₂ (%)</div>
-                                <div className="data-value">{hoveredInfo.data.gas_composition?.co2.toFixed(1) || '0.0'}</div>
-                            </div>
                             <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
                                 <div className="data-label">N₂ (%)</div>
                                 <div className="data-value">{hoveredInfo.data.gas_composition?.nitrogen.toFixed(2) || '0.00'}</div>
@@ -279,35 +212,6 @@ function GasNetworkGraph() {
                             </div>
                         </div>
                     )}
-
-                    {/* Flow Details */}
-                    <div className="site-data-compact">
-                        <div className="compact-section-title">Flow Details</div>
-                        <div className="compact-grid">
-                            <div className="compact-item">
-                                <span className="compact-label">Flow Rate</span>
-                                <span className="compact-value">{hoveredInfo.data.flow_rate?.toFixed(1)} SCFM</span>
-                            </div>
-                            {/* {hoveredInfo.data.actual_flow_rate !== undefined && (
-                                <div className="compact-item">
-                                    <span className="compact-label">Actual</span>
-                                    <span className="compact-value">{hoveredInfo.data.actual_flow_rate?.toFixed(1)} SCFM</span>
-                                </div>
-                            )} */}
-                            {hoveredInfo.data.flow_velocity !== undefined && (
-                                <div className="compact-item">
-                                    <span className="compact-label">Velocity</span>
-                                    <span className="compact-value">{hoveredInfo.data.flow_velocity?.toFixed(2)} ft/s</span>
-                                </div>
-                            )}
-                            {hoveredInfo.data.transit_time_minutes !== undefined && (
-                                <div className="compact-item">
-                                    <span className="compact-label">Transit</span>
-                                    <span className="compact-value">{hoveredInfo.data.transit_time_minutes?.toFixed(1)} min</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
                 </div>
             )}
 
