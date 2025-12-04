@@ -227,10 +227,6 @@
     background-color: rgba(15, 23, 42, 0.3);
 }
 
-.flow-gauge {
-    /* margin-bottom: 10px; */
-}
-
 .gauge-subtitle {
     font-size: 0.75rem;
     color: #64748b;

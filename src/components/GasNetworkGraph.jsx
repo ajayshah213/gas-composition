@@ -185,23 +185,23 @@ function GasNetworkGraph() {
 
             {/* Junction/Hub Nodes with detailed data */}
             {hoveredInfo && hoveredInfo.type === 'node' && !hoveredInfo.data.max_flow_rate && hoveredInfo.data.flow_rate !== undefined && (
-                <div className="info-panel site-tile-panel" style={{ borderColor: '#64748b', maxWidth: '300px' }}>
+                <div className="info-panel site-tile-panel">
                     <div className="site-tile-header">
                         <div className="site-title">{hoveredInfo.data.label || hoveredInfo.data.id}</div>
                         <div className="site-status-dot" data-status={hoveredInfo.data.status || 'ok'}></div>
                     </div>
 
-                    {/* Flow Rate Display */}
-                    <div className="gauge-section" style={{ padding: '15px 20px' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', color: '#64748b', lineHeight: 1 }}>
+                    {/* Flow Rate - Simple Display */}
+                    <div className="gauge-section" style={{ padding: '24px 20px' }}>
+                        <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#eab308', lineHeight: 1 }}>
                             {hoveredInfo.data.flow_rate?.toFixed(1) || '0.0'}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>SCFM</div>
+                        <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '6px', fontWeight: '500' }}>SCFM</div>
                     </div>
 
-                    {/* Gas Composition Grid - Only N₂ and O₂ */}
+                    {/* Gas Composition - Simple 2-column grid matching plant style */}
                     {hoveredInfo.data.gas_composition && (
-                        <div className="site-data-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                        <div className="site-data-grid" style={{ gridTemplateColumns: '1fr 1fr', paddingBottom: '15px' }}>
                             <div className="data-box" style={{ backgroundColor: '#4a5442' }}>
                                 <div className="data-label">N₂ (%)</div>
                                 <div className="data-value">{hoveredInfo.data.gas_composition?.nitrogen.toFixed(2) || '0.00'}</div>
@@ -215,11 +215,28 @@ function GasNetworkGraph() {
                 </div>
             )}
 
-            {/* Hub Node - Simple Display */}
-            {hoveredInfo && hoveredInfo.type === 'node' && !hoveredInfo.data.max_flow_rate && hoveredInfo.data.flow_rate === undefined && (
-                <div className="info-panel">
-                    <div className="info-title">
-                        {hoveredInfo.data.name || hoveredInfo.data.label || hoveredInfo.data.id}
+            {/* Hub Node - Flow Rate and Pressure */}
+            {hoveredInfo && hoveredInfo.type === 'node' && hoveredInfo.data.label === 'Main Hub' && (
+                <div className="info-panel site-tile-panel">
+                    <div className="site-tile-header">
+                        <div className="site-title">{hoveredInfo.data.label}</div>
+                        <div className="site-status-dot" data-status="ok"></div>
+                    </div>
+
+                    {/* Flow Rate - Simple Display */}
+                    <div className="gauge-section" style={{ padding: '20px 20px 10px' }}>
+                        <div style={{ fontSize: '2rem', fontWeight: '700', color: '#eab308', lineHeight: 1 }}>
+                            {hoveredInfo.data.flow_rate?.toFixed(1) || '0.0'}
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '6px', fontWeight: '500' }}>SCFM</div>
+                    </div>
+
+                    {/* Pressure Display */}
+                    <div className="site-data-grid" style={{ gridTemplateColumns: '1fr', paddingBottom: '15px', paddingTop: '10px' }}>
+                        <div className="data-box" style={{ backgroundColor: '#1e4040' }}>
+                            <div className="data-label">Pressure (PSIG)</div>
+                            <div className="data-value">{hoveredInfo.data.psig?.toFixed(1) || 'N/A'}</div>
+                        </div>
                     </div>
                 </div>
             )}
